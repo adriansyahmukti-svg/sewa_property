@@ -3,48 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, viewport-fit=cover">
-    <title>SewaPro - Manajemen Properti Terpadu</title>
+    <title>SewaPro - Full Interactive</title>
     
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- React & ReactDOM -->
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    
-    <!-- Babel for JSX -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
-        
-        :root {
-            --sat: env(safe-area-inset-top);
-            --sar: env(safe-area-inset-right);
-            --sab: env(safe-area-inset-bottom);
-            --sal: env(safe-area-inset-left);
-        }
-
-        body { 
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            overscroll-behavior-y: contain; /* Mencegah pull-to-refresh yang mengganggu */
-        }
-
+        :root { --sab: env(safe-area-inset-bottom); }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; overscroll-behavior-y: contain; }
         .custom-scroll::-webkit-scrollbar { width: 4px; }
-        .custom-scroll::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
-        
-        .pulse-red { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .5; } }
-        
-        /* Mobile Specific */
+        .custom-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         @media (max-width: 768px) {
-            .main-content-area {
-                padding-bottom: calc(5rem + var(--sab));
-            }
-            .mobile-bottom-nav {
-                padding-bottom: var(--sab);
-                height: calc(4.5rem + var(--sab));
-            }
+            .main-content-area { padding-bottom: calc(5.5rem + var(--sab)); }
+            .mobile-bottom-nav { padding-bottom: var(--sab); height: calc(4.5rem + var(--sab)); }
         }
     </style>
 </head>
@@ -54,7 +28,6 @@
     <script type="text/babel">
         const { useState, useMemo } = React;
 
-        // --- ICONS ---
         const Icon = ({ children, size = 20, className = "" }) => (
             <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={className}>{children}</svg>
         );
@@ -62,252 +35,403 @@
         const Icons = {
             Dashboard: (p) => <Icon {...p}><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></Icon>,
             Users: (p) => <Icon {...p}><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></Icon>,
+            Building: (p) => <Icon {...p}><rect x="4" y="2" width="16" height="20" rx="2" ry="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01"/><path d="M16 6h.01"/><path d="M8 10h.01"/><path d="M16 10h.01"/><path d="M8 14h.01"/><path d="M16 14h.01"/></Icon>,
+            History: (p) => <Icon {...p}><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></Icon>,
             Wallet: (p) => <Icon {...p}><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/><path d="M18 13h2v2h-2z"/></Icon>,
             Message: (p) => <Icon {...p}><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></Icon>,
-            Wrench: (p) => <Icon {...p}><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></Icon>,
             Plus: (p) => <Icon {...p}><line x1="12" x2="12" y1="5" y2="19"/><line x1="5" x2="19" y1="12" y2="12"/></Icon>,
             Trash: (p) => <Icon {...p}><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></Icon>,
-            History: (p) => <Icon {...p}><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></Icon>,
             Dollar: (p) => <Icon {...p}><line x1="12" x2="12" y1="2" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></Icon>,
             Alert: (p) => <Icon {...p}><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></Icon>,
-            Logout: (p) => <Icon {...p}><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></Icon>,
-            Bell: (p) => <Icon {...p}><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></Icon>
+            Check: (p) => <Icon {...p}><polyline points="20 6 9 17 4 12"/></Icon>,
+            Logout: (p) => <Icon {...p}><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></Icon>
         };
 
-        // --- CONSTANTS ---
         const INITIAL_PROPERTIES = [
-            { id: 1, name: 'Kos Melati', price: 1500000 },
-            { id: 2, name: 'Kontrakan Hijau', price: 2500000 },
-            { id: 3, name: 'Apartemen City', price: 5500000 },
+            { id: 1, name: 'Kos Melati', price: 1500000, units: 10 },
+            { id: 2, name: 'Kontrakan Hijau', price: 2500000, units: 5 },
+            { id: 3, name: 'Apartemen City', price: 5500000, units: 20 },
         ];
 
-        // --- UTILS ---
         const formatIDR = (val) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(val);
-
-        // --- COMPONENTS ---
-        const StatCard = ({ icon, label, val, colorClass }) => (
-            <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-3">
-                <div className={`p-2.5 rounded-xl bg-slate-50 ${colorClass}`}>{icon}</div>
-                <div className="min-w-0">
-                    <p className="text-[10px] font-bold text-slate-400 uppercase truncate">{label}</p>
-                    <p className="text-sm md:text-base font-extrabold truncate">{val}</p>
-                </div>
-            </div>
-        );
 
         function App() {
             const [role, setRole] = useState('owner');
             const [activeTab, setActiveTab] = useState('dashboard');
-            const [tenants, setTenants] = useState([]);
+            const [tenants, setTenants] = useState([
+                { id: 101, name: 'Budi Hartono', unit: 'A1', propertyName: 'Kos Melati', monthlyRent: 1500000, status: 'Belum Bayar' }
+            ]);
             const [payments, setPayments] = useState([]);
-            const [complaints, setComplaints] = useState([]);
+            const [complaints, setComplaints] = useState([
+                { id: 201, tenantName: 'Budi Hartono', message: 'Kran air kamar mandi bocor', status: 'Open', date: '2023-10-25' }
+            ]);
             const [loggedInUser, setLoggedInUser] = useState(null);
             const [loginInput, setLoginInput] = useState('');
             const [showAddModal, setShowAddModal] = useState(false);
+            const [complaintInput, setComplaintInput] = useState('');
 
-            // Mock Stats
+            // Stats Logic
             const stats = useMemo(() => ({
                 income: payments.reduce((a, b) => a + b.amount, 0),
                 tenants: tenants.length,
-                pending: tenants.length, // Simplified
+                pending: tenants.filter(t => t.status === 'Belum Bayar').length,
                 alerts: complaints.filter(c => c.status === 'Open').length
             }), [tenants, payments, complaints]);
+
+            // Actions
+            const processPayment = (tenantId) => {
+                const tenant = tenants.find(t => t.id === tenantId);
+                if (!tenant || tenant.status === 'Lunas') return;
+
+                setTenants(tenants.map(t => t.id === tenantId ? { ...t, status: 'Lunas' } : t));
+                setPayments([{
+                    id: Date.now(),
+                    tenantName: tenant.name,
+                    amount: tenant.monthlyRent,
+                    date: new Date().toLocaleDateString('id-ID'),
+                    status: 'Sukses'
+                }, ...payments]);
+            };
+
+            const submitComplaint = () => {
+                if (!complaintInput.trim()) return;
+                const newComplaint = {
+                    id: Date.now(),
+                    tenantName: loggedInUser,
+                    message: complaintInput,
+                    status: 'Open',
+                    date: new Date().toLocaleDateString('id-ID')
+                };
+                setComplaints([newComplaint, ...complaints]);
+                setComplaintInput('');
+                alert("Laporan berhasil dikirim!");
+            };
+
+            const resolveComplaint = (id) => {
+                setComplaints(complaints.map(c => c.id === id ? { ...c, status: 'Selesai' } : c));
+            };
 
             const handleAddTenant = (e) => {
                 e.preventDefault();
                 const formData = new FormData(e.target);
                 const prop = INITIAL_PROPERTIES.find(p => p.id === Number(formData.get('propertyId')));
-                setTenants([...tenants, {
+                const newTenant = {
                     id: Date.now(),
                     name: formData.get('name'),
                     unit: formData.get('unit'),
                     propertyName: prop.name,
                     monthlyRent: prop.price,
                     status: 'Belum Bayar'
-                }]);
+                };
+                setTenants([...tenants, newTenant]);
                 setShowAddModal(false);
+            };
+
+            const TenantPortal = () => {
+                const myData = tenants.find(t => t.name.toLowerCase() === loggedInUser?.toLowerCase());
+                const myPayments = payments.filter(p => p.tenantName.toLowerCase() === loggedInUser?.toLowerCase());
+
+                return (
+                    <div className="max-w-md mx-auto py-4 space-y-6">
+                        {/* Card Tagihan */}
+                        <div className="bg-slate-900 p-8 rounded-[2.5rem] text-white shadow-2xl relative overflow-hidden">
+                            <div className="absolute -top-10 -right-10 opacity-10 rotate-12"><Icons.Wallet size={160}/></div>
+                            <div className="relative z-10">
+                                <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1">Status Penghuni</p>
+                                <h2 className="text-2xl font-black italic truncate mb-8">{loggedInUser}</h2>
+                                
+                                {myData ? (
+                                    <div className="p-5 bg-white/5 rounded-2xl border border-white/10 mb-6">
+                                        <div className="flex justify-between items-center mb-1">
+                                            <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Tagihan {myData.propertyName}</p>
+                                            <span className={`text-[9px] font-black px-2 py-0.5 rounded uppercase ${myData.status === 'Lunas' ? 'bg-emerald-500' : 'bg-rose-500'}`}>
+                                                {myData.status}
+                                            </span>
+                                        </div>
+                                        <p className="text-3xl font-black italic tracking-tighter">{formatIDR(myData.monthlyRent)}</p>
+                                    </div>
+                                ) : (
+                                    <p className="text-xs text-slate-400 mb-6 italic">Data unit belum ditemukan. Hubungi pemilik.</p>
+                                )}
+
+                                <button 
+                                    onClick={() => myData && processPayment(myData.id)}
+                                    disabled={!myData || myData.status === 'Lunas'} 
+                                    className="w-full bg-blue-600 disabled:bg-slate-700 py-4 rounded-xl font-black uppercase text-xs shadow-xl active:scale-95 transition-all">
+                                    {myData?.status === 'Lunas' ? 'Sudah Terbayar' : 'Konfirmasi Bayar Sekarang'}
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Lapor Kendala */}
+                        <div className="bg-white p-6 rounded-[2rem] border border-slate-200">
+                            <h3 className="font-black uppercase italic mb-4 text-xs flex items-center gap-2"><Icons.Message size={14}/> Lapor Kendala</h3>
+                            <textarea 
+                                value={complaintInput}
+                                onChange={(e) => setComplaintInput(e.target.value)}
+                                className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl mb-4 text-sm outline-none focus:border-blue-500 transition-all min-h-[100px]" 
+                                placeholder="Misal: AC tidak dingin, air mati..."
+                            ></textarea>
+                            <button 
+                                onClick={submitComplaint}
+                                className="w-full bg-slate-900 text-white py-3 rounded-xl font-black text-[10px] uppercase shadow-lg active:scale-95 transition-all">
+                                Kirim Laporan
+                            </button>
+                        </div>
+
+                        {/* Riwayat */}
+                        <div className="bg-white p-6 rounded-[2rem] border border-slate-200">
+                            <h3 className="font-black uppercase italic mb-4 text-xs flex items-center gap-2"><Icons.History size={14}/> Riwayat Bayar</h3>
+                            {myPayments.length === 0 ? (
+                                <p className="text-[10px] text-slate-400 text-center py-4 font-bold uppercase">Belum ada transaksi</p>
+                            ) : (
+                                <div className="space-y-3">
+                                    {myPayments.map(p => (
+                                        <div key={p.id} className="flex justify-between items-center text-xs border-b border-slate-50 pb-2">
+                                            <span className="font-bold">{p.date}</span>
+                                            <span className="text-emerald-600 font-black">{formatIDR(p.amount)}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                );
             };
 
             return (
                 <div className="flex flex-col md:flex-row min-h-[100dvh] bg-slate-50 overflow-x-hidden">
                     
-                    {/* DESKTOP SIDEBAR */}
+                    {/* SIDEBAR (Desktop) */}
                     <aside className="hidden md:flex w-72 bg-white border-r border-slate-200 flex-col sticky top-0 h-screen">
                         <div className="p-8">
-                            <h1 className="text-2xl font-black text-blue-600 italic uppercase">SewaPro</h1>
+                            <h1 className="text-2xl font-black text-blue-600 italic uppercase tracking-tighter">SewaPro</h1>
                         </div>
                         <nav className="flex-1 px-4 space-y-1">
                             {role === 'owner' ? (
                                 <>
-                                    <button onClick={() => setActiveTab('dashboard')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all ${activeTab === 'dashboard' ? 'bg-blue-600 text-white shadow-lg shadow-blue-200' : 'text-slate-500 hover:bg-slate-100'}`}><Icons.Dashboard /> Dashboard</button>
-                                    <button onClick={() => setActiveTab('tenants')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all ${activeTab === 'tenants' ? 'bg-blue-600 text-white shadow-lg shadow-blue-200' : 'text-slate-500 hover:bg-slate-100'}`}><Icons.Users /> Penghuni</button>
-                                    <button onClick={() => setActiveTab('complaints')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all ${activeTab === 'complaints' ? 'bg-blue-600 text-white shadow-lg shadow-blue-200' : 'text-slate-500 hover:bg-slate-100'}`}><Icons.Message /> Keluhan</button>
+                                    <button onClick={() => setActiveTab('dashboard')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all ${activeTab === 'dashboard' ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-500 hover:bg-slate-100'}`}><Icons.Dashboard /> Dashboard</button>
+                                    <button onClick={() => setActiveTab('tenants')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all ${activeTab === 'tenants' ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-500 hover:bg-slate-100'}`}><Icons.Users /> Penghuni</button>
+                                    <button onClick={() => setActiveTab('properties')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all ${activeTab === 'properties' ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-500 hover:bg-slate-100'}`}><Icons.Building /> Properti</button>
+                                    <button onClick={() => setActiveTab('history')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all ${activeTab === 'history' ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-500 hover:bg-slate-100'}`}><Icons.History /> Keuangan</button>
                                 </>
                             ) : (
-                                <button onClick={() => setActiveTab('status')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all ${activeTab === 'status' ? 'bg-blue-600 text-white shadow-lg shadow-blue-200' : 'text-slate-500 hover:bg-slate-100'}`}><Icons.Wallet /> Status Sewa</button>
+                                <button onClick={() => setActiveTab('status')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all ${activeTab === 'status' ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-500 hover:bg-slate-100'}`}><Icons.Wallet /> Portal Sewa</button>
                             )}
                         </nav>
                         <div className="p-4 border-t border-slate-100">
                              <div className="bg-slate-100 p-1 rounded-xl flex text-[10px] font-black mb-4 uppercase">
-                                <button onClick={() => setRole('owner')} className={`flex-1 py-2 rounded-lg ${role === 'owner' ? 'bg-white shadow-sm text-blue-600' : 'text-slate-400'}`}>Owner</button>
-                                <button onClick={() => setRole('tenant')} className={`flex-1 py-2 rounded-lg ${role === 'tenant' ? 'bg-white shadow-sm text-blue-600' : 'text-slate-400'}`}>Tenant</button>
+                                <button onClick={() => {setRole('owner'); setActiveTab('dashboard');}} className={`flex-1 py-2 rounded-lg transition-all ${role === 'owner' ? 'bg-white shadow-sm text-blue-600' : 'text-slate-400'}`}>Owner</button>
+                                <button onClick={() => {setRole('tenant'); setActiveTab('status');}} className={`flex-1 py-2 rounded-lg transition-all ${role === 'tenant' ? 'bg-white shadow-sm text-blue-600' : 'text-slate-400'}`}>Tenant</button>
                             </div>
                         </div>
                     </aside>
 
-                    {/* MOBILE TOP BAR */}
+                    {/* TOP BAR (Mobile) */}
                     <header className="md:hidden bg-white/80 backdrop-blur-md border-b border-slate-200 px-6 py-4 flex justify-between items-center sticky top-0 z-30">
-                        <h1 className="text-xl font-black text-blue-600 italic uppercase">SewaPro</h1>
+                        <h1 className="text-xl font-black text-blue-600 italic uppercase tracking-tighter">SewaPro</h1>
                         <div className="flex bg-slate-100 p-1 rounded-lg text-[9px] font-black uppercase">
-                            <button onClick={() => setRole('owner')} className={`px-3 py-1.5 rounded-md ${role === 'owner' ? 'bg-white shadow-sm text-blue-600' : 'text-slate-400'}`}>Owner</button>
-                            <button onClick={() => setRole('tenant')} className={`px-3 py-1.5 rounded-md ${role === 'tenant' ? 'bg-white shadow-sm text-blue-600' : 'text-slate-400'}`}>Tenant</button>
+                            <button onClick={() => {setRole('owner'); setActiveTab('dashboard');}} className={`px-3 py-1.5 rounded-md ${role === 'owner' ? 'bg-white shadow-sm text-blue-600' : 'text-slate-400'}`}>Owner</button>
+                            <button onClick={() => {setRole('tenant'); setActiveTab('status');}} className={`px-3 py-1.5 rounded-md ${role === 'tenant' ? 'bg-white shadow-sm text-blue-600' : 'text-slate-400'}`}>Tenant</button>
                         </div>
                     </header>
 
-                    {/* MAIN CONTENT AREA */}
-                    <main className="flex-1 flex flex-col p-5 md:p-10 main-content-area overflow-x-hidden">
-                        <div className="max-w-4xl w-full mx-auto">
-                            
+                    {/* MAIN CONTENT */}
+                    <main className="flex-1 p-5 md:p-10 main-content-area overflow-y-auto custom-scroll">
+                        <div className="max-w-4xl mx-auto">
                             {role === 'owner' ? (
-                                <div className="space-y-6">
+                                <div className="space-y-8">
                                     {activeTab === 'dashboard' && (
                                         <>
-                                            <div className="flex flex-col gap-1 mb-2">
-                                                <h2 className="text-2xl font-black italic uppercase">Ringkasan Bisnis</h2>
-                                                <p className="text-slate-400 text-xs font-bold uppercase tracking-wider">Update Realtime</p>
-                                            </div>
-                                            
-                                            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
-                                                <StatCard icon={<Icons.Dollar size={18}/>} label="Pendapatan" val={formatIDR(stats.income)} colorClass="text-emerald-500" />
-                                                <StatCard icon={<Icons.Users size={18}/>} label="Penghuni" val={stats.tenants} colorClass="text-blue-500" />
-                                                <StatCard icon={<Icons.Alert size={18}/>} label="Menunggak" val={stats.pending} colorClass="text-rose-500" />
-                                                <StatCard icon={<Icons.Message size={18}/>} label="Keluhan" val={stats.alerts} colorClass="text-amber-500" />
+                                            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                                                <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                                                    <div className="p-2 w-fit rounded-lg bg-emerald-50 text-emerald-600 mb-3"><Icons.Dollar size={18}/></div>
+                                                    <p className="text-[10px] font-bold text-slate-400 uppercase">Total Saldo</p>
+                                                    <p className="text-lg font-black">{formatIDR(stats.income)}</p>
+                                                </div>
+                                                <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                                                    <div className="p-2 w-fit rounded-lg bg-blue-50 text-blue-600 mb-3"><Icons.Users size={18}/></div>
+                                                    <p className="text-[10px] font-bold text-slate-400 uppercase">Total Warga</p>
+                                                    <p className="text-lg font-black">{stats.tenants}</p>
+                                                </div>
+                                                <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                                                    <div className="p-2 w-fit rounded-lg bg-rose-50 text-rose-600 mb-3"><Icons.Alert size={18}/></div>
+                                                    <p className="text-[10px] font-bold text-slate-400 uppercase">Nunggak</p>
+                                                    <p className="text-lg font-black">{stats.pending}</p>
+                                                </div>
+                                                <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                                                    <div className="p-2 w-fit rounded-lg bg-amber-50 text-amber-600 mb-3"><Icons.Message size={18}/></div>
+                                                    <p className="text-[10px] font-bold text-slate-400 uppercase">Keluhan</p>
+                                                    <p className="text-lg font-black">{stats.alerts}</p>
+                                                </div>
                                             </div>
 
-                                            <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm mt-8">
-                                                <div className="flex justify-between items-center mb-6">
-                                                    <h3 className="font-black uppercase italic text-sm tracking-tight">Daftar Penghuni</h3>
-                                                    <button onClick={() => setShowAddModal(true)} className="p-2 bg-blue-600 text-white rounded-xl shadow-lg shadow-blue-100"><Icons.Plus size={18}/></button>
+                                            <div className="grid md:grid-cols-2 gap-8 mt-4">
+                                                {/* Keluhan Aktif */}
+                                                <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
+                                                    <h3 className="font-black uppercase italic text-xs mb-6 flex items-center gap-2 text-amber-600"><Icons.Alert size={14}/> Keluhan Aktif</h3>
+                                                    <div className="space-y-4">
+                                                        {complaints.filter(c => c.status === 'Open').map(c => (
+                                                            <div key={c.id} className="p-4 bg-slate-50 rounded-2xl relative group">
+                                                                <p className="text-[10px] font-black text-blue-600 uppercase mb-1">{c.tenantName}</p>
+                                                                <p className="text-xs font-bold text-slate-700 mb-3">"{c.message}"</p>
+                                                                <button onClick={() => resolveComplaint(c.id)} className="text-[9px] font-black bg-white border border-slate-200 px-3 py-1.5 rounded-lg hover:bg-emerald-500 hover:text-white transition-all uppercase">Selesaikan</button>
+                                                            </div>
+                                                        ))}
+                                                        {complaints.filter(c => c.status === 'Open').length === 0 && <p className="text-center py-10 text-slate-300 text-[10px] font-bold uppercase italic tracking-widest">Semua Aman</p>}
+                                                    </div>
                                                 </div>
-                                                
-                                                <div className="space-y-4">
-                                                    {tenants.map(t => (
-                                                        <div key={t.id} className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100">
-                                                            <div className="min-w-0">
-                                                                <p className="font-bold text-sm truncate uppercase">{t.name}</p>
-                                                                <p className="text-[10px] text-slate-400 font-bold uppercase">{t.propertyName} • Unit {t.unit}</p>
+
+                                                {/* Pembayaran Terbaru */}
+                                                <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
+                                                    <h3 className="font-black uppercase italic text-xs mb-6 flex items-center gap-2 text-emerald-600"><Icons.History size={14}/> Kas Masuk Terbaru</h3>
+                                                    <div className="space-y-4">
+                                                        {payments.slice(0, 5).map(p => (
+                                                            <div key={p.id} className="flex justify-between items-center p-3 border-b border-slate-50">
+                                                                <div>
+                                                                    <p className="font-bold text-xs uppercase">{p.tenantName}</p>
+                                                                    <p className="text-[9px] text-slate-400 font-bold uppercase">{p.date}</p>
+                                                                </div>
+                                                                <p className="text-xs font-black text-emerald-600">{formatIDR(p.amount)}</p>
                                                             </div>
-                                                            <div className="flex items-center gap-3 shrink-0">
-                                                                <span className="text-[9px] font-black bg-rose-100 text-rose-600 px-2 py-1 rounded-md uppercase">Menunggak</span>
-                                                                <button onClick={() => setTenants(tenants.filter(x => x.id !== t.id))} className="text-slate-300 hover:text-rose-500 transition-colors"><Icons.Trash size={16}/></button>
-                                                            </div>
-                                                        </div>
-                                                    ))}
-                                                    {tenants.length === 0 && <p className="text-center py-10 text-slate-400 text-xs italic font-medium uppercase tracking-widest">Belum ada data penghuni</p>}
+                                                        ))}
+                                                        {payments.length === 0 && <p className="text-center py-10 text-slate-300 text-[10px] font-bold uppercase italic tracking-widest">Belum ada transaksi</p>}
+                                                    </div>
                                                 </div>
                                             </div>
                                         </>
                                     )}
 
-                                    {activeTab === 'complaints' && (
-                                        <div className="space-y-4">
-                                            <h2 className="text-xl font-black italic uppercase mb-4">Laporan Keluhan</h2>
-                                            <div className="grid grid-cols-1 gap-4">
-                                                {complaints.length === 0 && <p className="text-center py-20 text-slate-400 text-xs italic">Semua kendala aman.</p>}
+                                    {activeTab === 'tenants' && (
+                                        <div className="bg-white p-6 rounded-3xl border border-slate-200">
+                                            <div className="flex justify-between items-center mb-8">
+                                                <h2 className="text-xl font-black italic uppercase">Daftar Penghuni</h2>
+                                                <button onClick={() => setShowAddModal(true)} className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-xl text-xs font-black uppercase shadow-lg active:scale-95 transition-all"><Icons.Plus size={14}/> Tambah</button>
+                                            </div>
+                                            <div className="space-y-3">
+                                                {tenants.map(t => (
+                                                    <div key={t.id} className="flex items-center justify-between p-4 border border-slate-100 rounded-2xl hover:bg-slate-50 transition-colors">
+                                                        <div className="flex items-center gap-4">
+                                                            <div className={`w-10 h-10 rounded-full flex items-center justify-center font-black text-xs ${t.status === 'Lunas' ? 'bg-emerald-100 text-emerald-600' : 'bg-rose-100 text-rose-600'}`}>{t.name.charAt(0)}</div>
+                                                            <div>
+                                                                <p className="font-bold text-sm uppercase">{t.name} <span className="text-[10px] text-slate-400 ml-2">Unit {t.unit}</span></p>
+                                                                <p className="text-[10px] font-black uppercase tracking-tight text-slate-400">{t.propertyName}</p>
+                                                            </div>
+                                                        </div>
+                                                        <div className="flex items-center gap-4">
+                                                            <span className={`text-[9px] font-black px-2 py-1 rounded uppercase ${t.status === 'Lunas' ? 'text-emerald-500 bg-emerald-50' : 'text-rose-500 bg-rose-50'}`}>{t.status}</span>
+                                                            <button onClick={() => setTenants(tenants.filter(x => x.id !== t.id))} className="text-slate-300 hover:text-rose-500 transition-colors"><Icons.Trash size={18}/></button>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {activeTab === 'properties' && (
+                                        <div className="grid md:grid-cols-2 gap-6">
+                                            {INITIAL_PROPERTIES.map(p => (
+                                                <div key={p.id} className="bg-white p-6 rounded-[2.5rem] border border-slate-200 shadow-sm group hover:shadow-xl transition-all border-b-4 border-b-blue-600">
+                                                    <div className="flex justify-between items-start mb-6">
+                                                        <div className="p-3 bg-blue-50 text-blue-600 rounded-2xl"><Icons.Building size={24}/></div>
+                                                        <span className="text-[10px] font-black bg-blue-100 text-blue-600 px-3 py-1 rounded-full uppercase">{p.units} Unit Total</span>
+                                                    </div>
+                                                    <h3 className="text-lg font-black uppercase italic mb-1">{p.name}</h3>
+                                                    <p className="text-slate-400 text-xs font-bold uppercase mb-4">Mulai {formatIDR(p.price)}/Bulan</p>
+                                                    <div className="w-full bg-slate-50 h-2 rounded-full overflow-hidden">
+                                                        <div className="bg-blue-600 h-full" style={{width: '65%'}}></div>
+                                                    </div>
+                                                    <p className="text-[9px] font-bold text-slate-400 mt-2 uppercase">Okupansi Terisi: 65%</p>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+
+                                    {activeTab === 'history' && (
+                                        <div className="bg-white p-6 rounded-3xl border border-slate-200">
+                                            <h2 className="text-xl font-black italic uppercase mb-6">Riwayat Kas</h2>
+                                            <div className="space-y-4">
+                                                {payments.map(p => (
+                                                    <div key={p.id} className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl">
+                                                        <div className="flex items-center gap-4">
+                                                            <div className="p-2 bg-emerald-100 text-emerald-600 rounded-lg"><Icons.Check size={16}/></div>
+                                                            <div>
+                                                                <p className="font-bold text-xs uppercase">{p.tenantName}</p>
+                                                                <p className="text-[9px] text-slate-400 font-bold uppercase">{p.date}</p>
+                                                            </div>
+                                                        </div>
+                                                        <p className="text-sm font-black text-emerald-600">{formatIDR(p.amount)}</p>
+                                                    </div>
+                                                ))}
+                                                {payments.length === 0 && <p className="text-center py-20 text-slate-400 text-xs font-bold uppercase italic tracking-[0.2em]">Belum Ada Uang Masuk</p>}
                                             </div>
                                         </div>
                                     )}
                                 </div>
                             ) : (
-                                <div className="max-w-md mx-auto py-4">
+                                <div className="w-full">
                                     {!loggedInUser ? (
-                                        <div className="bg-white p-8 rounded-[2.5rem] shadow-2xl border border-slate-100 text-center">
-                                            <div className="w-16 h-16 bg-blue-50 text-blue-600 rounded-3xl flex items-center justify-center mx-auto mb-6"><Icons.Users size={32}/></div>
-                                            <h2 className="text-xl font-black uppercase mb-2">Portal Penghuni</h2>
-                                            <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-8 leading-relaxed">Masukkan nama anda untuk mengecek tagihan dan melapor kendala</p>
+                                        <div className="max-w-md mx-auto bg-white p-10 rounded-[3rem] shadow-2xl border border-slate-100 text-center mt-10">
+                                            <div className="w-20 h-20 bg-blue-50 text-blue-600 rounded-[2rem] flex items-center justify-center mx-auto mb-8 animate-bounce"><Icons.Users size={40}/></div>
+                                            <h2 className="text-2xl font-black uppercase italic mb-2">Login Penghuni</h2>
+                                            <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-10 leading-relaxed">Gunakan Nama Budi Hartono Untuk Demo</p>
                                             <div className="space-y-4">
-                                                <input className="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl font-bold uppercase text-center focus:border-blue-500 outline-none transition-all" placeholder="NAMA LENGKAP" value={loginInput} onChange={e => setLoginInput(e.target.value)} />
-                                                <button onClick={() => setLoggedInUser(loginInput)} className="w-full bg-blue-600 text-white py-4 rounded-2xl font-black shadow-lg shadow-blue-200 active:scale-95 transition-all uppercase tracking-wider text-sm">Masuk Sekarang</button>
+                                                <input className="w-full p-5 bg-slate-50 border-2 border-slate-100 rounded-2xl font-black uppercase text-center focus:border-blue-500 outline-none transition-all" placeholder="NAMA LENGKAP" value={loginInput} onChange={e => setLoginInput(e.target.value)} />
+                                                <button onClick={() => setLoggedInUser(loginInput)} className="w-full bg-blue-600 text-white py-5 rounded-2xl font-black shadow-2xl active:scale-95 transition-all uppercase text-sm">Masuk Portal</button>
                                             </div>
                                         </div>
                                     ) : (
-                                        <div className="space-y-6">
-                                            <div className="bg-slate-900 p-8 rounded-[2.5rem] text-white shadow-2xl relative overflow-hidden">
-                                                <div className="absolute -top-10 -right-10 opacity-10 rotate-12"><Icons.Wallet size={160}/></div>
-                                                <div className="relative z-10">
-                                                    <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1">Halo, Selamat Datang</p>
-                                                    <h2 className="text-2xl font-black italic truncate mb-8">{loggedInUser}</h2>
-                                                    
-                                                    <div className="p-5 bg-white/5 rounded-2xl border border-white/10 mb-6">
-                                                        <div className="flex justify-between items-center mb-1">
-                                                            <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Total Tagihan</p>
-                                                            <span className="text-[9px] font-black bg-rose-500 text-white px-2 py-0.5 rounded uppercase">Belum Lunas</span>
-                                                        </div>
-                                                        <p className="text-3xl font-black italic tracking-tighter">Rp0</p>
-                                                    </div>
-
-                                                    <button className="w-full bg-blue-600 py-4 rounded-xl font-black uppercase text-xs shadow-xl active:scale-95 transition-all">Konfirmasi Bayar</button>
-                                                </div>
-                                            </div>
-                                            
-                                            <div className="bg-white p-6 rounded-[2rem] border border-slate-200">
-                                                <h3 className="font-black uppercase italic mb-4 text-xs">Lapor Kendala Unit</h3>
-                                                <textarea className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl mb-4 text-sm outline-none focus:border-blue-500 transition-all min-h-[100px]" placeholder="Misal: Keran bocor, Lampu mati..."></textarea>
-                                                <button className="w-full bg-slate-100 py-3 rounded-xl font-black text-[10px] uppercase text-slate-500 hover:bg-slate-200">Kirim Laporan</button>
-                                            </div>
-                                        </div>
+                                        <TenantPortal />
                                     )}
                                 </div>
                             )}
                         </div>
                     </main>
 
-                    {/* MOBILE BOTTOM NAVIGATION */}
+                    {/* BOTTOM NAV (Mobile) */}
                     <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 flex items-center justify-around z-40 mobile-bottom-nav">
                         {role === 'owner' ? (
                             <>
-                                <button onClick={() => setActiveTab('dashboard')} className={`flex flex-col items-center justify-center flex-1 h-full gap-1 transition-all ${activeTab === 'dashboard' ? 'text-blue-600' : 'text-slate-400'}`}>
-                                    <Icons.Dashboard size={22} />
-                                    <span className="text-[9px] font-black uppercase">Beranda</span>
+                                <button onClick={() => setActiveTab('dashboard')} className={`flex flex-col items-center justify-center flex-1 h-full gap-1 ${activeTab === 'dashboard' ? 'text-blue-600' : 'text-slate-400'}`}>
+                                    <Icons.Dashboard size={20} /><span className="text-[8px] font-black uppercase">Home</span>
                                 </button>
-                                <button onClick={() => setActiveTab('tenants')} className={`flex flex-col items-center justify-center flex-1 h-full gap-1 transition-all ${activeTab === 'tenants' ? 'text-blue-600' : 'text-slate-400'}`}>
-                                    <Icons.Users size={22} />
-                                    <span className="text-[9px] font-black uppercase">Warga</span>
+                                <button onClick={() => setActiveTab('tenants')} className={`flex flex-col items-center justify-center flex-1 h-full gap-1 ${activeTab === 'tenants' ? 'text-blue-600' : 'text-slate-400'}`}>
+                                    <Icons.Users size={20} /><span className="text-[8px] font-black uppercase">Warga</span>
                                 </button>
-                                <button onClick={() => setActiveTab('complaints')} className={`flex flex-col items-center justify-center flex-1 h-full gap-1 transition-all ${activeTab === 'complaints' ? 'text-blue-600' : 'text-slate-400'}`}>
-                                    <Icons.Message size={22} />
-                                    <span className="text-[9px] font-black uppercase">Laporan</span>
+                                <button onClick={() => setActiveTab('properties')} className={`flex flex-col items-center justify-center flex-1 h-full gap-1 ${activeTab === 'properties' ? 'text-blue-600' : 'text-slate-400'}`}>
+                                    <Icons.Building size={20} /><span className="text-[8px] font-black uppercase">Aset</span>
+                                </button>
+                                <button onClick={() => setActiveTab('history')} className={`flex flex-col items-center justify-center flex-1 h-full gap-1 ${activeTab === 'history' ? 'text-blue-600' : 'text-slate-400'}`}>
+                                    <Icons.History size={20} /><span className="text-[8px] font-black uppercase">Kas</span>
                                 </button>
                             </>
                         ) : (
                             <>
-                                <button onClick={() => setActiveTab('status')} className={`flex flex-col items-center justify-center flex-1 h-full gap-1 transition-all ${activeTab === 'status' ? 'text-blue-600' : 'text-slate-400'}`}>
-                                    <Icons.Wallet size={22} />
-                                    <span className="text-[9px] font-black uppercase">Sewa</span>
+                                <button onClick={() => setActiveTab('status')} className="flex flex-col items-center justify-center flex-1 h-full gap-1 text-blue-600">
+                                    <Icons.Wallet size={22} /><span className="text-[9px] font-black uppercase">Bayar</span>
                                 </button>
                                 <button onClick={() => {setLoggedInUser(null); setLoginInput('');}} className="flex flex-col items-center justify-center flex-1 h-full gap-1 text-rose-400">
-                                    <Icons.Logout size={22} />
-                                    <span className="text-[9px] font-black uppercase">Keluar</span>
+                                    <Icons.Logout size={22} /><span className="text-[9px] font-black uppercase">Keluar</span>
                                 </button>
                             </>
                         )}
                     </nav>
 
-                    {/* MODAL: ADD TENANT */}
+                    {/* MODAL ADD TENANT */}
                     {showAddModal && (
-                        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] flex items-end md:items-center justify-center">
+                        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] flex items-end md:items-center justify-center p-0 md:p-4">
                             <div className="bg-white w-full max-w-md rounded-t-[2.5rem] md:rounded-[2.5rem] p-8 shadow-2xl animate-in slide-in-from-bottom duration-300">
                                 <h3 className="text-xl font-black italic mb-6 uppercase">Tambah Penghuni</h3>
                                 <form onSubmit={handleAddTenant} className="space-y-4">
-                                    <input name="name" required className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl font-bold outline-none focus:border-blue-500 uppercase text-sm" placeholder="NAMA LENGKAP" />
+                                    <input name="name" required className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl font-bold outline-none focus:border-blue-600 uppercase text-sm" placeholder="NAMA LENGKAP" />
                                     <div className="grid grid-cols-2 gap-4">
-                                        <input name="unit" required className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl font-bold outline-none text-sm" placeholder="UNIT (MISAL: A-01)" />
-                                        <select name="propertyId" className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl font-bold outline-none text-sm">
+                                        <input name="unit" required className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl font-bold outline-none text-sm" placeholder="UNIT (E.G. A1)" />
+                                        <select name="propertyId" className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl font-bold outline-none text-xs uppercase">
                                             {INITIAL_PROPERTIES.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
                                         </select>
                                     </div>
-                                    <button className="w-full bg-blue-600 text-white py-4 mt-2 rounded-2xl font-black shadow-xl shadow-blue-100 uppercase text-sm">Simpan Data</button>
-                                    <button type="button" onClick={() => setShowAddModal(false)} className="w-full text-slate-400 font-bold py-2 text-[10px] uppercase">Batal</button>
+                                    <button className="w-full bg-blue-600 text-white py-4 mt-2 rounded-2xl font-black shadow-xl uppercase text-sm active:scale-95 transition-all">Simpan Data</button>
+                                    <button type="button" onClick={() => setShowAddModal(false)} className="w-full text-slate-400 font-bold py-2 text-[10px] uppercase tracking-widest">Batalkan</button>
                                 </form>
                             </div>
                         </div>
